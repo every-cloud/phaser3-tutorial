@@ -2,6 +2,8 @@ import { Game, Types } from 'phaser';
 import { Level1, LoadingScene } from './scenes';
 
 const gameConfig: Types.Core.GameConfig = {
+// parameter
+
 	title: 'Phaser game tutorial',
   type: Phaser.WEBGL,
   parent: 'game',
@@ -32,6 +34,7 @@ const gameConfig: Types.Core.GameConfig = {
     disableWebAudio: false,
   },
 	scene: [LoadingScene, Level1],
+
 };
 
 window.sizeChanged = () => {
@@ -45,6 +48,7 @@ window.sizeChanged = () => {
       }, 100);
     }
   };
+
   window.onresize = () => window.sizeChanged();
 
   window.game = new Game(gameConfig);
