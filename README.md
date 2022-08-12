@@ -316,3 +316,248 @@ console.log('Hello world!');
 ~~~
 npm run dev
 ~~~
+
+
+
+
+
+
+
+
+
+
+1. Game객체 생성
+
+scr/index.ts에서 초기화
+매개변수 설정
+
+
+
+
+2. Scene 생성
+
+최소 한개의 Scene이 필요함
+
+
+
+
+
+
+
+
+
+
+parameter 설명
+
+title
+type
+parent
+backgroundColor
+scale
+physics
+render
+callbacks
+canvasStyle
+autoFocus
+audio
+scene
+
+
+
+
+Game 객체 생성
+
+
+
+
+src/index.ts
+
+실행할 parameter 선언
+게임창 크기 변경을 위한 sizeChanged() 메소드 추가
+import { Game, Types } from 'phaser';
+import { Level1, LoadingScene } from './scenes';
+
+const gameConfig: Types.Core.GameConfig = {
+
+// parameter 설정
+
+	title: 'Phaser game tutorial',
+  type: Phaser.WEBGL,
+  parent: 'game',
+  backgroundColor: '#351f1b',
+  scale: {
+    mode: Phaser.Scale.ScaleModes.NONE,
+    width: window.innerWidth,
+    height: window.innerHeight,
+  },
+  physics: {
+    default: 'arcade',
+    arcade: {
+      debug: false,
+    },
+  },
+  render: {
+    antialiasGL: false,
+    pixelArt: true,
+  },
+  callbacks: {
+    postBoot: () => {
+      window.sizeChanged();
+    },
+  },
+  canvasStyle: `display: block; width: 100%; height: 100%;`,
+  autoFocus: true,
+  audio: {
+    disableWebAudio: false,
+  },
+	scene: [LoadingScene, Level1],
+
+};
+
+window.sizeChanged = () => {
+    if (window.game.isBooted) {
+      setTimeout(() => {
+        window.game.scale.resize(window.innerWidth, window.innerHeight);
+        window.game.canvas.setAttribute(
+          'style',
+          `display: block; width: ${window.innerWidth}px; height: ${window.innerHeight}px;`,
+        );
+      }, 100);
+    }
+  };
+  
+  window.onresize = () => window.sizeChanged();
+
+  window.game = new Game(gameConfig);
+
+
+
+
+
+
+
+index.d.ts
+
+interface Window {
+    sizeChanged: () => void;
+    game: Phaser.Game;
+  }
+ 
+
+
+
+
+
+
+
+Scene 생성
+
+
+
+
+src/scenes/index.ts
+
+export * from './loading';
+
+
+
+
+src/scenes/loading/index.ts
+
+import { Scene } from 'phaser';
+export class LoadingScene extends Scene {
+  constructor() {
+    super('loading-scene');
+  }
+  create(): void {
+    console.log('Loading scene was created');
+  }
+}
+
+
+
+
+Scene lifecyle method
+
+init(data) 
+preload()
+create(data)
+update(time, delta)
+
+
+
+
+
+
+
+캐릭터 불러오기
+
+
+
+
+1) src/assets/sprites/king.png 추가
+2) preload() method 추가하기
+3) sprite 
+
+
+
+
+src/scenes/loading/index.ts
+
+import { GameObjects, Scene } from 'phaser';
+export class LoadingScene extends Scene {
+  private king! : GameObjects.Sprite;
+
+  constructor() {
+    super('loading-scene');
+  }
+
+  preload(): void {
+    this.load.baseURL = 'assets/';
+    // key: 'king'
+    // path from baseURL to file: 'sprites/king.png'
+    this.load.image('king', 'sprites/king.png');
+  }
+
+  create(): void {
+		this.king = this.add.sprite(100, 100, 'king');
+	}
+
+}
+
+
+
+
+Typescript의 느낌표 ( ! ) 
+
+https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html
+
+확정할당 어선셜(Definite Assignment Assertions) : 값이 무조건 할당되어있다고 컴파일러에게 전달하여 값이 없어도 변수 또는 개체를 사용할 수 있음
+
+
+
+
+
+
+
+webpack.config.js
+
+dev모드에서 실행 시 실행 시 asset 표시되지 않아 plugin 추가
+...
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+...
+plugins: [
+	...,
+	new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'assets',
+          to: 'assets',
+        },
+      ],
+    }),
+	...
+]
+
+
+
