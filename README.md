@@ -1,7 +1,7 @@
-# phaser3-tutorial
+# phaser3-tutorial 
  
 
-
+#Part1 : 개발환경설정
 
 ## 프로젝트 생성
 - npm 사용
@@ -318,36 +318,24 @@ npm run dev
 ~~~
 
 
+# Part2 : 게임설정
+
+## 알아야할 개념
+### Scene life cycle
+- init
+- preload
+- create
+- update
 
 
+### 1. Game객체 생성
+- scr/index.ts에서 초기화
+- 매개변수 설정
 
+### 2. Scene 생성
+- 최소 한개의 Scene이 필요함
 
-
-
-
-
-1. Game객체 생성
-
-scr/index.ts에서 초기화
-매개변수 설정
-
-
-
-
-2. Scene 생성
-
-최소 한개의 Scene이 필요함
-
-
-
-
-
-
-
-
-
-
-parameter 설명
+- parameter 설명
 
 title
 type
@@ -363,17 +351,21 @@ audio
 scene
 
 
+### Typescript의 느낌표 ( ! ) 
+- https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html
+- 확정할당 어선셜(Definite Assignment Assertions) : 값이 무조건 할당되어있다고 컴파일러에게 전달하여 값이 없어도 변수 또는 개체를 사용할 수 있음
 
 
-Game 객체 생성
 
 
 
+## Game 객체 생성
 
-src/index.ts
+### src/index.ts
+- 실행할 parameter 선언
+- 게임창 크기 변경을 위한 sizeChanged() 메소드 추가
 
-실행할 parameter 선언
-게임창 크기 변경을 위한 sizeChanged() 메소드 추가
+~~~
 import { Game, Types } from 'phaser';
 import { Level1, LoadingScene } from './scenes';
 
@@ -429,41 +421,31 @@ window.sizeChanged = () => {
   window.onresize = () => window.sizeChanged();
 
   window.game = new Game(gameConfig);
+~~~
 
 
+### index.d.ts
 
-
-
-
-
-index.d.ts
-
+~~~
 interface Window {
     sizeChanged: () => void;
     game: Phaser.Game;
   }
- 
+~~~ 
 
 
+## Scene 생성
 
+### src/scenes/index.ts
 
-
-
-
-Scene 생성
-
-
-
-
-src/scenes/index.ts
-
+~~~
 export * from './loading';
+~~~
 
 
+### src/scenes/loading/index.ts
 
-
-src/scenes/loading/index.ts
-
+~~~
 import { Scene } from 'phaser';
 export class LoadingScene extends Scene {
   constructor() {
@@ -473,37 +455,19 @@ export class LoadingScene extends Scene {
     console.log('Loading scene was created');
   }
 }
+~~~
 
 
 
-
-Scene lifecyle method
-
-init(data) 
-preload()
-create(data)
-update(time, delta)
+## 캐릭터 불러오기
+1. src/assets/sprites/king.png 추가
+2. preload() method 추가하기
+3. sprite 
 
 
+### src/scenes/loading/index.ts
 
-
-
-
-
-캐릭터 불러오기
-
-
-
-
-1) src/assets/sprites/king.png 추가
-2) preload() method 추가하기
-3) sprite 
-
-
-
-
-src/scenes/loading/index.ts
-
+~~~
 import { GameObjects, Scene } from 'phaser';
 export class LoadingScene extends Scene {
   private king! : GameObjects.Sprite;
@@ -524,24 +488,11 @@ export class LoadingScene extends Scene {
 	}
 
 }
+~~~
 
 
-
-
-Typescript의 느낌표 ( ! ) 
-
-https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-7.html
-
-확정할당 어선셜(Definite Assignment Assertions) : 값이 무조건 할당되어있다고 컴파일러에게 전달하여 값이 없어도 변수 또는 개체를 사용할 수 있음
-
-
-
-
-
-
-
-webpack.config.js
-
+### webpack.config.js
+~~~
 dev모드에서 실행 시 실행 시 asset 표시되지 않아 plugin 추가
 ...
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -558,6 +509,6 @@ plugins: [
     }),
 	...
 ]
-
+~~~
 
 
