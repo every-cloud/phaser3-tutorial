@@ -1,7 +1,7 @@
 import { GameObjects, Scene } from 'phaser';
-export class LoadingScene extends Scene {
-  private king : GameObjects.Sprite;
 
+export class LoadingScene extends Scene {
+  private king! : GameObjects.Sprite;
 
   constructor() {
     super('loading-scene');
@@ -14,6 +14,9 @@ export class LoadingScene extends Scene {
     this.load.image('king', 'sprites/king.png');
   }
 
+  create(): void {
+		this.king = this.add.sprite(100, 100, 'king');
+	}
 
 
 }
