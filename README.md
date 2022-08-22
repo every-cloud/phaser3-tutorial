@@ -492,8 +492,9 @@ export class LoadingScene extends Scene {
 
 
 ### webpack.config.js
+- dev모드에서 실행 시 실행 시 asset 표시되지 않아 plugin 추가
+
 ~~~
-dev모드에서 실행 시 실행 시 asset 표시되지 않아 plugin 추가
 ...
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 ...
