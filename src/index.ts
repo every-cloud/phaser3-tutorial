@@ -37,6 +37,7 @@ const gameConfig: Types.Core.GameConfig = {
 
 };
 
+/** 게임 윈도우 창 사이즈 조정 */
 window.sizeChanged = () => {
     if (window.game.isBooted) {
       setTimeout(() => {
