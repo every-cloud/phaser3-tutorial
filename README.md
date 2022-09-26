@@ -24,14 +24,12 @@ npm add phaser
 npm add -D typescript @types/node cross-env webpack webpack-cli webpack-dev-server html-webpack-plugin clean-webpack-plugin copy-webpack-plugin terser-webpack-plugin ts-loader babel-loader @babel/core @babel/preset-env html-loader css-loader  style-loader json-loader
 ```
 
-{: .notice
+> npm5부터 --save 옵션이 기본으로 적용되어 생략해도 dependencies 항목에 추가됨
+> -P or --save-prod : package.json의 dependencies에 패키지를 등록 (default)
+> -D or --save-dev : package.json의 devDepndencies에 패키지를 등록
+> -O or --save-optional : package.json의 optionalDependencies에 패키지를 등록
+> --no-save : dependencies에 패키지를 등록하지 않음
 
-npm5부터 --save 옵션이 기본으로 적용되어 생략해도 dependencies 항목에 추가됨
--P or --save-prod : package.json의 dependencies에 패키지를 등록 (default)
--D or --save-dev : package.json의 devDepndencies에 패키지를 등록
--O or --save-optional : package.json의 optionalDependencies에 패키지를 등록
---no-save : dependencies에 패키지를 등록하지 않음
-}
 
 
 
@@ -54,7 +52,7 @@ npm add -D eslint eslint-config-prettier eslint-plugin-prettier prettier @typesc
 - scenes
 
 
-###src/index.html
+### src/index.html
 
 ~~~
 http-server에서 인식될 메인 문서
