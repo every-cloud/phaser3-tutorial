@@ -365,7 +365,7 @@ scene
 
 ~~~
 import { Game, Types } from 'phaser';
-import { Level1, LoadingScene } from './scenes';
+import { LoadingScene } from './scenes';
 
 const gameConfig: Types.Core.GameConfig = {
 
@@ -400,7 +400,7 @@ const gameConfig: Types.Core.GameConfig = {
   audio: {
     disableWebAudio: false,
   },
-	scene: [LoadingScene, Level1],
+	scene: [LoadingScene],
 
 };
 
@@ -431,14 +431,17 @@ interface Window {
   }
 ~~~ 
 
+{: .notice
+index.d.ts
+d.ts 파일은 TypeScript 코드로 작성한 선언 파일 (d는 declaration, 선언을 의미)
+라이브러리는 자바스크립트 파일로 동작하는데 이 라이브러리를 타입스크립트 코드에서 사용하려면 타입을 추론할 수 없는 문제가 발생함
+에러가 발생하지 않도록 d.ts 선언파일을 만들어 라이브러리에 사용되는 변수들의 타입을 선언해놓음
+}
+
+
 
 ## Scene 생성
 
-### src/scenes/index.ts
-
-~~~
-export * from './loading';
-~~~
 
 
 ### src/scenes/loading/index.ts
@@ -453,6 +456,12 @@ export class LoadingScene extends Scene {
     console.log('Loading scene was created');
   }
 }
+~~~
+
+### src/scenes/index.ts
+
+~~~
+export * from './loading';
 ~~~
 
 
