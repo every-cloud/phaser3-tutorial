@@ -520,5 +520,127 @@ plugins: [
 # Part3 : 캐릭터 애니메이션, 이동 기능, 키 바인딩
 
 
+### src/scenes/level-1/index.ts
+
+~~~
+import { Scene } from 'phaser';
+export class Level1 extends Scene {
+  constructor() {
+    super('level-1-scene');
+  }
+  create(): void {
+		...
+	}
+}
+~~~
+
+### src/scenes/index.ts
+~~~
+export * from './loading';
+export * from './level-1';
+~~~
+
+gameConfig scene array 에 level-1 scene 추가하기
+### src/index.ts
+~~~
+import { Level1, LoadingScene } from './scenes';
+...
+const gameConfig = {
+	...
+	scene: [LoadingScene, Level1],
+	...
+};
+~~~
+
+king을 Loading scene 에서 Level1 Secene 으로 옮기기
+
+### src/scenes/level-1/index.ts
+~~~
+import { GameObjects, Scene } from 'phaser';
+export class Level1 extends Scene {
+  private king!: GameObjects.Sprite;
+  constructor() {
+    super('level-1-scene');
+  }
+  create(): void {
+    this.king = this.add.sprite(100, 100, 'king');
+  }
+}
+~~~
+
+Loading scene 에서 로딩이 끝난 후 다음 scene이 실행되도록 설정
+### src/scenes/loading/index.ts
+~~~
+...
+preload(): void {
+  this.load.baseURL = 'assets/';
+  this.load.image('king', 'sprites/king.png');
+}
+...
+create(): void {
+  this.scene.start('level-1-scene');
+}
+...
+~~~
 
 
+# Creating an actor
+
+
+일반적인 속성과 메소드를 포함한 actor 클래스 만들기(player 와 enemy 모두 적용 가능)
+> 이후 player 클래스 생성
+### src/classes/actor.ts
+~~~
+import { Physics } from 'phaser';
+export class Actor extends Physics.Arcade.Sprite {
+	protected hp = 100;
+  constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
+    super(scene, x, y, texture, frame);
+    scene.add.existing(this);
+    scene.physics.add.existing(this);
+    this.getBody().setCollideWorldBounds(true);
+  }
+	public getDamage(value?: number): void {
+    this.scene.tweens.add({
+      targets: this,
+      duration: 100,
+      repeat: 3,
+      yoyo: true,
+      alpha: 0.5,
+      onStart: () => {
+        if (value) {
+          this.hp = this.hp - value;
+        }
+      },
+      onComplete: () => {
+        this.setAlpha(1);
+      },
+    });
+  }
+	public getHPValue(): number {
+    return this.hp;
+  }
+	protected checkFlip(): void {
+    if (this.body.velocity.x < 0) {
+      this.scaleX = -1;
+    } else {
+      this.scaleX = 1;
+    }
+  }
+  protected getBody(): Physics.Arcade.Body {
+    return this.body as Physics.Arcade.Body;
+  }
+}
+~~~
+
+- this.getBody().setCollideWorldBounds(true) : "box" 스프라이트에 반응
+- protected checkFlip() : actor 가 왼쪽이나 오른쪽으로 이동 시 회전하도록
+- public getDamage() : actor를 공격하기 위한 메소드
+- scene.tweens : 대상 object의 일부 속성을 조작하여 애니메이션과 같은 효과 적용
+ : onStart : 깜빡이는 애니메이션 시작 시, hp 감소
+ : onComplete : 애니메이션이 끝나면 현재 불투명도 값을 this.setAlpha(1)로 강제 설정 
+   - Alpha 값은 0-1
+   - 값이 낮을수록 더 투명
+
+
+# Creating a player character
