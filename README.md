@@ -794,6 +794,79 @@ export class Player extends Actor {
 	}
 ...
 ~~~
+- run, attack 애니메이션 생성함
+
+running 애니메이션 적용
+### src/classes/player.ts
+~~~
+...
+update(): void {
+  this.getBody().setVelocity(0);
+  if (this.keyW?.isDown) {
+    this.body.velocity.y = -110;
+		!this.anims.isPlaying && this.anims.play('run', true);
+  }
+  if (this.keyA?.isDown) {
+    this.body.velocity.x = -110;
+    this.checkFlip();
+    this.getBody().setOffset(48, 15);
+		!this.anims.isPlaying && this.anims.play('run', true);
+  }
+  if (this.keyS?.isDown) {
+    this.body.velocity.y = 110;
+		!this.anims.isPlaying && this.anims.play('run', true);
+  }
+  if (this.keyD?.isDown) {
+    this.body.velocity.x = 110;
+    this.checkFlip();
+    this.getBody().setOffset(15, 15);
+		!this.anims.isPlaying && this.anims.play('run', true);
+  }
+}
+...
+~~~
+
+
+
+# Part 5: Creating and loading a map, enabling collisions
+지금까지 개발환경 설정, asset을 불러와 stage에 위치시키고, 움직이는캐릭터도 추가함
+이제 캐릭터가 있을 수 있는 location 생성.
+
+
+## 사전지식
+
+- location 생성하려면 Tiled editor(무료) 필요 
+- https://www.mapeditor.org/
+- tileset asset이 필요함 ( itch.io 에서 무료 패키지 구할 수 있음)
+- https://itch.io/
+
+
+## Preparing the editor
+
+tileset으로 map 생성
+file > New > New Map...
+
+Map
+- Orientation : Orthogonal
+- Tule layer format : CSV
+- Tile render order : Right Down
+
+Map size
+- fixed
+- width : 100 tiles
+- height : 100 tiles
+
+Tile size 
+- width : 16 px
+- height : 16 px
+
+
+
+
+## Creating a location
+
+
+
 
 
 
