@@ -708,3 +708,93 @@ update(): void {
     - 스프라이트 물리적 model(box) 설정
     this.getBody().setSize(30, 30);
 this.getBody().setOffset(8, 0);
+
+
+# Adding a player character
+- 캐릭터 class 만들었으니, 첫 번째 level scene에서 캐릭터 생성
+
+### src/scenes/level-1/index.ts
+~~~
+import { Scene } from 'phaser';
+import { Player } from '../../classes/player';
+export class Level1 extends Scene {
+  private player!: Player;
+  constructor() {
+    super('level-1-scene');
+  }
+  create(): void {
+    this.player = new Player(this, 100, 100);
+  }
+  update(): void {
+    this.player.update();
+  }
+}
+~~~
+
+- update method 에서 각 프레임마다 player character를 호출하여 위치 변경함
+  update(): void {
+    this.player.update();
+  }
+  
+ 
+ 
+ # Part 4: Sprite sheets and movement animation
+ 
+## Sprite sheet
+- sprite sheet는 sprite의 모음으로 sprite sheet의 프레임으로 애니메이션 만들 수 있음
+
+
+
+## Downloading the atlas
+atlas를 key로 사용하려면 asset 처럼 불러와야 함
+Loading scene 에서 altas와 json 불러오기
+
+### src/scenes/loading/index.ts
+~~~
+preload(): void {
+	this.load.baseURL = 'assets/';
+	// Our king texture
+	this.load.image('king', 'sprites/king.png');
+	// Our king atlas
+	this.load.atlas('a-king', 'spritesheets/a-king.png', 'spritesheets/a-king_atlas.json');
+}
+
+- a-king texture key로 atlas 사용할 수 있음
+
+
+캐릭터에 애니메이션 적용하기 위해 player class에 애니메이션 method 생성
+
+### src/classes/player.ts
+
+~~~
+export class Player extends Actor {
+...
+	constructor(...) {
+		...
+		this.initAnimations();
+	}
+...
+	private initAnimations(): void {
+    this.scene.anims.create({
+      key: 'run',
+      frames: this.scene.anims.generateFrameNames('a-king', {
+        prefix: 'run-',
+        end: 7,
+      }),
+      frameRate: 8,
+    });
+    this.scene.anims.create({
+      key: 'attack',
+      frames: this.scene.anims.generateFrameNames('a-king', {
+        prefix: 'attack-',
+        end: 2,
+      }),
+      frameRate: 8,
+    });
+	}
+...
+~~~
+
+
+
+
