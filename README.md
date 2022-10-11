@@ -869,5 +869,132 @@ Tile size
 
 
 
+ # Part 6: Adding objects to the map. Сamera
+ - tile로 맵 외에도 오브젝트를 위치시킬 포인트를 추가할 수도 있음
+ 
+
+## Putting object points on the map
+1. 새 레이어 생성
+- New > Object Layer > "Chests"
+2. toolbar > insert point 선택 후 배치
+3. 배치된 모든 point를 선택 후 좌측 레이아웃의 object properties의 "Name"을 "ChestPont"로 입력 
+4. Export json 
+
+## Placing chests on points
+1. Phaser types 에러때문에, GameObject를 ObjectPoint 타입으로 변경해야 해서
+  src/helpers/gameobject-to-object-point.ts 에 adapter를 준비.
+
+~~~
+export const gameObjectsToObjectPoints = (gameObjects: unknown[]): ObjectPoint[] => {
+  return gameObjects.map(gameObject => gameObject as ObjectPoint);
+};
+~~~
+
+index.d.ts 에 ObjectPoint 정의
+
+~~~
+type ObjectPoint = {
+  height: number;
+  id: number;
+  name: string;
+  point: boolean;
+  rotation: number;
+  type: string;
+  visible: boolean;
+  width: number;
+  x: number;
+  y: number;
+};
+~~~
+
+또한, 특정 sprite를 가져올 수 있도록 tileset을 sprite sheet로 별도로 로드해야 함
+이렇게 하려면 Loading scene에서 tiles_spr key로 sprite sheet를 로드하고 사이즈를 지정해야 함
 
 
+### src>scenes>loading>index.ts
+~~~
+
+ preload(): void {
+...
+    // CHEST LOADING
+    this.load.spritesheet('tiles_spr', 'tilemaps/tiles/dungeon-16-16.png', {
+      frameWidth: 16,
+      frameHeight: 16,
+    });
+
+  }
+~~~
+
+
+이제 first level stage에서 chests 배열을 정의하고
+상자를 생성하는 함수를 추가하고, 캐릭터 초기화 후 호출합니다.
+
+### src>scenes>level-1>index.ts
+
+~~~
+private chests!: Phaser.GameObjects.Sprite[];
+...
+...
+
+create(): void {
+...
+    this.initChests();
+}
+
+
+// this.map.filterObjects 함수로 원하는 layer에서 원하는 object를 선택할 수 있음.
+private initChests(): void {
+  const chestPoints = gameObjectsToObjectPoints(
+    this.map.filterObjects('Chests', obj => obj.name === 'ChestPoint'),
+  );
+  
+  // ID 595인 상자 sprite에 physics model 적용
+  this.chests = chestPoints.map(chestPoint =>
+    this.physics.add.sprite(chestPoint.x, chestPoint.y, 'tiles_spr', 595).setScale(1.5),
+  );
+  
+  // character가 상자를 밟을 때 flash가 터지고 상자가 사라지도록 함
+  this.chests.forEach(chest => {
+    this.physics.add.overlap(this.player, chest, (obj1, obj2) => {
+      obj2.destroy();
+      this.cameras.main.flash();
+    });
+  });
+}
+~~~
+this.map.filterObjects 함수로 원하는 layer에서 원하는 object를 선택할 수 있음.
+ - 첫번째 인자는 layer name, 두번째 인자는 필터링을 위한 callback 함수
+ - 위 케이스에서는 object에 "ChestPoint"라는 name이 있고 "chestPoints" 배열에 속함
+ 
+ 
+ 이제는 chestPoints array의 각 point에 physical model을 적용할 sprite 생성
+  Tile editor의 tileset에서 chest 를 선택하면 좌측 레이아웃의 properties에 ID를 확인할 수 있음.
+ 상자 sprite ID인 595
+ 
+  character가 상자를 밟을 때 flash가 터지고 상자가 사라지도록 함
+  
+  ## Cameras and following the player character
+  각 scene에는 이미 main camera가 있고 this.cameras.main 함수를 이용하여 접근할 수 있다.
+  
+  - camera 예시 : http://labs.phaser.io/index.html?dir=camera/&q=
+  
+  create()에서 초기화 후 
+  ~~~
+create(): void {
+...
+    this.initCamera();
+}  
+    
+private initCamera(): void {
+  this.cameras.main.setSize(this.game.scale.width, this.game.scale.height);
+  this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
+  this.cameras.main.setZoom(2);
+}
+  ~~~
+  
+  
+  
+ # Part 8: Bots, game end screen
+ 
+ enemy class 생성(player와 비슷하지만 keyboard control이 없음)
+ ### src/classes/enemy.ts
